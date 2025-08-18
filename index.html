@@ -30,19 +30,23 @@
   }
 
   .bottle {
-    position: absolute;
-    width: 25px;
-    opacity: 0.25;
-    animation: float 12s infinite ease-in-out;
-  }
+      position: absolute;
+      top: 0;                 /* anchor transform to top */
+      width: 25px;
+      opacity: 0;             /* fades in via keyframes early */
+      will-change: transform, opacity;
+      animation-name: rise;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+      animation-delay: 0s;    /* important: start immediately */
+    }
 
-  @keyframes float {
-    0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-    20% { opacity: 0.25; }
-    50% { transform: translateY(50vh) rotate(180deg); }
-    80% { opacity: 0.25; }
-    100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; }
-  }
+  @keyframes rise {
+      0%   { transform: translate3d(0, 110vh, 0) rotate(0deg);   opacity: 0; }
+      6%   {                                                     opacity: 0.25; }
+      50%  { transform: translate3d(0, 50vh, 0)  rotate(180deg); opacity: 0.25; }
+      100% { transform: translate3d(0, -20vh, 0) rotate(360deg); opacity: 0; }
+    }
 
   .fade-zone {
     position: absolute;
@@ -55,6 +59,7 @@
     pointer-events: none;
     z-index: 1;
   }
+
 
   .logo {
     width: 250px;
@@ -71,28 +76,6 @@
     position: relative;
   }
 
-  .coming-soon-title {
-    font-size: 1.0rem;
-    color: #070606;
-    text-shadow: 0 0 8px rgba(0, 0, 0, 0.7), 
-                0 0 15px rgba(5, 5, 4, 0.5);
-    animation: glow 1s ease-in-out infinite alternate;
-    font: caption;
-    font-family: math;
-    font-size: larger;
-
-  }
-
-  @keyframes glow {
-    from {
-      text-shadow: 0 0 5px rgba(118, 118, 118, 0.5);
-    }
-    to {
-      text-shadow: 0 0 20px rgba(181, 0, 0, 0.9);
-    }
-  }
-
-
   @media (max-width: 768px) { .logo { width: 180px; } h1 { font-size: 1.5rem; } }
   @media (max-width: 480px) { .logo { width: 286px; } h1 { font-size: 1.2rem; } }
 </style>
@@ -103,7 +86,7 @@
 <div class="fade-zone"></div>
 
 <img src="smerfume-trans-logo.svg" alt="Smerfume Logo" class="logo" id="logo">
-<h1 class="coming-soon-title">Something Exquisite is Coming Soon</h1>
+<h1>Something Exquisite is Coming Soon</h1>
 
 <script>
 const background = document.getElementById("background");
@@ -111,27 +94,35 @@ const background = document.getElementById("background");
 // Create floating bottles
 for (let i = 0; i < 20; i++) {
   const bottle = document.createElement("img");
-  bottle.src = "bottle-logo.svg";  // Replace with your actual file
+  bottle.src = "bottle-logo.svg";
   bottle.classList.add("bottle");
   bottle.style.left = Math.random() * 100 + "vw";
-  bottle.style.animationDuration = 10 + Math.random() * 10 + "s";
-  bottle.style.animationDelay = Math.random() * 5 + "s";
-  const colors = [
+
+  // Random duration between 12s - 20s
+  const duration = 12 + Math.random() * 10;
+  bottle.style.animationDuration = duration + "s";
+
+  // 50% bottles start normally (delay = 0 → smooth bottom to up)
+  // 50% bottles start mid-way using negative delay
+  if (Math.random() > 0.5) {
+    bottle.style.animationDelay = "0s"; 
+  } else {
+    bottle.style.animationDelay = -(Math.random() * duration) + "s";
+  }
+
+  // Random subtle tilt colors
+  bottle.style.transform = "translate3d(0,110vh,0)"; // ensure initial bottom position
+  bottle.style.filter = [
     "hue-rotate(300deg) saturate(200%) brightness(1.3)",
     "hue-rotate(180deg) saturate(150%) brightness(1.2)",
     "hue-rotate(260deg) saturate(180%) brightness(1.3)",
     "hue-rotate(90deg) saturate(200%) brightness(1.3)",
     "hue-rotate(45deg) saturate(200%) brightness(1.3)"
-  ];
+  ][Math.floor(Math.random() * 5)];
+  
 
-  const startY = Math.random() * window.innerHeight;
-  bottle.style.top = startY + "px";
-
-
-  bottle.style.filter = colors[Math.floor(Math.random() * colors.length)];
   background.appendChild(bottle);
 }
-
 // Desktop mouse tilt
 document.addEventListener("mousemove", (e) => {
   const x = (e.clientX / window.innerWidth - 0.5) * 30;
