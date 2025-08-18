@@ -71,6 +71,28 @@
     position: relative;
   }
 
+  .coming-soon-title {
+    font-size: 1.0rem;
+    color: #070606;
+    text-shadow: 0 0 8px rgba(0, 0, 0, 0.7), 
+                0 0 15px rgba(5, 5, 4, 0.5);
+    animation: glow 1s ease-in-out infinite alternate;
+    font: caption;
+    font-family: math;
+    font-size: larger;
+
+  }
+
+  @keyframes glow {
+    from {
+      text-shadow: 0 0 5px rgba(118, 118, 118, 0.5);
+    }
+    to {
+      text-shadow: 0 0 20px rgba(181, 0, 0, 0.9);
+    }
+  }
+
+
   @media (max-width: 768px) { .logo { width: 180px; } h1 { font-size: 1.5rem; } }
   @media (max-width: 480px) { .logo { width: 286px; } h1 { font-size: 1.2rem; } }
 </style>
@@ -81,7 +103,7 @@
 <div class="fade-zone"></div>
 
 <img src="smerfume-trans-logo.svg" alt="Smerfume Logo" class="logo" id="logo">
-<h1>Something Exquisite is Coming Soon</h1>
+<h1 class="coming-soon-title">Something Exquisite is Coming Soon</h1>
 
 <script>
 const background = document.getElementById("background");
@@ -101,6 +123,11 @@ for (let i = 0; i < 20; i++) {
     "hue-rotate(90deg) saturate(200%) brightness(1.3)",
     "hue-rotate(45deg) saturate(200%) brightness(1.3)"
   ];
+
+  const startY = Math.random() * window.innerHeight;
+  bottle.style.top = startY + "px";
+
+
   bottle.style.filter = colors[Math.floor(Math.random() * colors.length)];
   background.appendChild(bottle);
 }
@@ -114,8 +141,8 @@ document.addEventListener("mousemove", (e) => {
 
 // Mobile device tilt (more sensitive)
 window.addEventListener("deviceorientation", (e) => {
-  const sensitivity = 2; // smaller = more sensitive
-  const maxShift = 50;
+  const sensitivity = 0.5 // increased sensitivity
+  const maxShift = 100;    // allow larger shift
   const x = Math.max(Math.min(e.gamma / sensitivity, maxShift), -maxShift);
   const y = Math.max(Math.min(e.beta / sensitivity, maxShift), -maxShift);
   background.style.transform = `translate(${x}px, ${y}px)`;
